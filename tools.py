@@ -49,10 +49,10 @@ def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1)
     phylogeny is an artifact of type Phylogeny[Rooted]
     metadata is the metadata imported by qiime2.Metadata.load()
     name is the name of a folder where to export .qzv files. input string
-    '''
 	# TODO
 	# input type check
 	# phylogenetic metrics / non-phylogenetic metrics
+	'''
 
 	df_table = table.view(pd.DataFrame)
 
