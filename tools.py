@@ -44,6 +44,12 @@ def mkdir_(name):
     
     
 def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1)
+    '''
+    table is an artifact of type FeatureTable[Frequency]
+    phylogeny is an artifact of type Phylogeny[Rooted]
+    metadata is the metadata imported by qiime2.Metadata.load()
+    name is the name of a folder where to export .qzv files. input string
+    '''
     # TODO
     # input type check
     # phylogenetic metrics / non-phylogenetic metrics
@@ -89,3 +95,18 @@ def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1)
         coordinate = pcoa_result.samples
         coordinate.loc['proportion_explained'] = pcoa_result.proportion_explained
         coordinate.to_csv(name + '/PCOA/' + attr[:-8] + '.tsv', sep='\t')
+
+def core_ASV(table, abu, prev):
+    '''
+    table is an artifact of type FeatureTable[Frequency]
+    abu is the threshold of abundance.  Abundance of ASV lower than this will be filtered out. [0-1]
+    prev is the threshold of prevalence. [0-1]
+    '''
+    df = table.view(pd.DataFrame) # convert artifact to pd.DataFrame
+    df = df.div(df.sum(axis = 1), axis = 0) # covert counts of ASV to abundance
+    
+    # get ASVs with prevelance higher than threshold. When calculate the prevalence of given ASV,
+    # only those abundance greater than threshold will be considered.
+    core = df.loc[:,(df>abu).sum()>(len(df)*prev)]
+    
+    return core
