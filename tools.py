@@ -110,3 +110,36 @@ def core_ASV(table, abu, prev):
     core = df.loc[:,(df>abu).sum()>(len(df)*prev)]
     
     return core
+
+def table2lefse(table, metadata, delimiter, c, sub_c=False):
+    '''
+    table is an artifact of type FeatureTable[Frequency]
+    metadata is the metadata imported by qiime2.Metadata.load()
+    delimiter is the delimiter in taxon to separate different levels
+    c: class in lefse format
+    sub_c: sub class in lefse format
+    '''
+    df_table = table.view(pd.DataFrame)
+    col_sep = df_table.columns.str.split(delimiter).str.join('|')
+    df_table.columns = col_sep
+    df_table = df_table.div(df_table.sum(axis = 1), axis = 0)
+    
+    df_meta = (metadata.get_column(c)).to_dataframe()
+    df_meta = df_meta.loc[df_table.index]
+
+    # class
+    loc=0
+    df_table.insert(loc=loc, column=c, value=df_meta[c])
+    loc += 1
+    
+    # sub-class
+    if sub_c != False:
+        df_meta = (metadata.get_column(sub_c)).to_dataframe()
+        df_meta = df_meta.loc[df_table.index]
+        df_table.insert(loc=loc, column=sub_c, value=df_meta[sub_c])
+        loc += 1
+    # ID
+    df_table.insert(loc=loc, column='Sample_ID', value=df_table.index)
+    
+    df_table = df_table.transpose()  
+    df_table.to_csv('LEfSe_input.tsv', sep='\t', index=True, header=False)
