@@ -43,7 +43,7 @@ def mkdir_(name):
         pass    
     
     
-def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1)
+def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1):
     '''
     table is an artifact of type FeatureTable[Frequency]
     phylogeny is an artifact of type Phylogeny[Rooted]
@@ -76,7 +76,7 @@ def core_metrics2qzv(table, phylogeny, metadata, name, n_jobs=1)
                                                 metadata = metadata)
         significance.visualization.save(project_name + '/alpha_diversity/' + attr[:-7])
 
-        alpha_div = (getattr(core_metrics, attr).view(Metadata).to_dataframe()
+        alpha_div = (getattr(core_metrics, attr).view(Metadata)).to_dataframe()
         df = pd.concat([df, alpha_div], axis=1) 
 
     df.to_csv(name + '/alpha_diversity/alpha_diversity.tsv', sep='\t')
